@@ -1,0 +1,634 @@
+# SQL Notes — CollegeDB
+
+## 1. Creating a Database
+
+A database is used to store related tables and data.
+
+```sql
+CREATE DATABASE CollegeDB;
+```
+
+To see all available databases:
+
+```sql
+SHOW DATABASES;
+```
+
+To select a database:
+
+```sql
+USE CollegeDB;
+```
+
+To check which database is currently selected:
+
+```sql
+SELECT DATABASE();
+```
+
+---
+
+# 2. Creating Tables
+
+We created two tables:
+
+* `Department`
+* `Student`
+
+The `Student` table is related to the `Department` table.
+
+## Department Table
+
+```sql
+CREATE TABLE Department(
+    dept_id INT PRIMARY KEY,
+    dept_name VARCHAR(50)
+);
+```
+
+### Structure
+
+| Column    | Data Type   | Constraint  |
+| --------- | ----------- | ----------- |
+| dept_id   | INT         | PRIMARY KEY |
+| dept_name | VARCHAR(50) | —           |
+
+`dept_id` uniquely identifies every department.
+
+---
+
+# 3. Primary Key
+
+A **Primary Key** uniquely identifies each record in a table.
+
+```sql
+dept_id INT PRIMARY KEY
+```
+
+Important properties:
+
+* Must be unique
+* Cannot contain `NULL`
+* Only one primary key can exist for a table
+
+Example:
+
+```text
+1 → CSE
+2 → ECE
+3 → ME
+4 → CE
+```
+
+---
+
+# 4. Creating the Student Table
+
+```sql
+CREATE TABLE Student(
+    student_id INT PRIMARY KEY,
+    name VARCHAR(50),
+    age INT,
+    email VARCHAR(70),
+    marks INT,
+    dept_id INT,
+    FOREIGN KEY(dept_id) REFERENCES Department(dept_id)
+);
+```
+
+### Structure
+
+| Column     | Data Type   | Purpose           |
+| ---------- | ----------- | ----------------- |
+| student_id | INT         | Unique student ID |
+| name       | VARCHAR(50) | Student name      |
+| age        | INT         | Student age       |
+| email      | VARCHAR(70) | Email address     |
+| marks      | INT         | Student marks     |
+| dept_id    | INT         | Department ID     |
+
+---
+
+# 5. Foreign Key
+
+A **Foreign Key** creates a relationship between two tables.
+
+```sql
+FOREIGN KEY(dept_id) REFERENCES Department(dept_id)
+```
+
+Here:
+
+```text
+Student.dept_id
+       ↓
+Department.dept_id
+```
+
+So the `dept_id` in the Student table refers to a department that exists in the Department table.
+
+### Example
+
+If:
+
+```text
+Department
+1 → CSE
+2 → ECE
+```
+
+Then a student can have:
+
+```text
+dept_id = 1
+```
+
+which means the student belongs to CSE.
+
+---
+
+# 6. Checking Table Information
+
+To see all tables:
+
+```sql
+SHOW TABLES;
+```
+
+To see the structure of a table:
+
+```sql
+DESCRIBE Department;
+```
+
+or
+
+```sql
+DESC Department;
+```
+
+For Student:
+
+```sql
+DESCRIBE Student;
+```
+
+---
+
+# 7. Inserting Data
+
+## Insert into Department
+
+```sql
+INSERT INTO Department
+VALUES
+(1, 'CSE'),
+(2, 'ECE'),
+(3, 'ME'),
+(4, 'CE');
+```
+
+Check the data:
+
+```sql
+SELECT * FROM Department;
+```
+
+---
+
+# 8. Inserting Student Data
+
+```sql
+INSERT INTO Student
+VALUES
+(101, 'Rahul', 20, 'rahul@gmail.com', 85, 1),
+(102, 'Ankit', 21, 'ankit@gmail.com', 91, 1),
+(103, 'Priya', 20, 'priya@gmail.com', 78, 2),
+(104, 'Aman', 22, 'aman@gmail.com', 88, 3),
+(105, 'Neha', 21, 'neha@gmail.com', 95, 1),
+(106, 'Rohit', 20, 'rohit@gmail.com', 72, 4),
+(107, 'Sneha', 22, 'sneha@gmail.com', 89, 2),
+(108, 'Vikas', 21, 'vikas@gmail.com', 67, 3);
+```
+
+Check the records:
+
+```sql
+SELECT * FROM Student;
+```
+
+---
+
+# 9. INSERT Using Specific Columns
+
+We can specify which columns we want to insert into.
+
+```sql
+INSERT INTO Student
+(student_id, name, marks)
+VALUES
+(109, 'TestUser', 35);
+```
+
+The other columns will get their default value, which is `NULL` when no default is defined.
+
+Check the record:
+
+```sql
+SELECT *
+FROM Student
+WHERE student_id = 109;
+```
+
+---
+
+# 10. SELECT Query
+
+`SELECT` is used to retrieve data from a table.
+
+## Select all columns
+
+```sql
+SELECT * FROM Student;
+```
+
+`*` means all columns.
+
+## Select specific columns
+
+```sql
+SELECT student_id FROM Student;
+```
+
+Multiple columns:
+
+```sql
+SELECT name, marks FROM Student;
+```
+
+Example:
+
+```sql
+SELECT name, marks, age
+FROM Student;
+```
+
+---
+
+# 11. WHERE Clause
+
+`WHERE` is used to filter records.
+
+## Marks greater than 70
+
+```sql
+SELECT *
+FROM Student
+WHERE marks > 70;
+```
+
+## Marks equal to 70
+
+```sql
+SELECT *
+FROM Student
+WHERE marks = 70;
+```
+
+## Marks less than 70
+
+```sql
+SELECT *
+FROM Student
+WHERE marks < 70;
+```
+
+---
+
+# 12. Using AND
+
+`AND` means **both conditions must be true**.
+
+```sql
+SELECT *
+FROM Student
+WHERE marks < 70
+AND age > 20;
+```
+
+Only students satisfying both conditions will be returned.
+
+---
+
+## Multiple AND Conditions
+
+```sql
+SELECT *
+FROM Student
+WHERE marks < 70
+AND age > 20
+AND dept_id = 3;
+```
+
+All three conditions must be true.
+
+---
+
+# 13. Using OR
+
+`OR` means **at least one condition must be true**.
+
+```sql
+SELECT *
+FROM Student
+WHERE marks < 70
+OR age > 20;
+```
+
+A student will be selected if at least one of the conditions is true.
+
+---
+
+# 14. Filtering by Department
+
+To find students belonging to department 3:
+
+```sql
+SELECT *
+FROM Student
+WHERE dept_id = 3;
+```
+
+To find students belonging to department 2:
+
+```sql
+SELECT *
+FROM Student
+WHERE dept_id = 2;
+```
+
+---
+
+# 15. ORDER BY
+
+`ORDER BY` is used to sort the result.
+
+## Ascending Order
+
+```sql
+SELECT name, marks, age
+FROM Student
+ORDER BY marks ASC;
+```
+
+`ASC` means:
+
+```text
+Small → Large
+A → Z
+```
+
+For example:
+
+```text
+67
+72
+78
+85
+91
+95
+```
+
+---
+
+## Descending Order
+
+```sql
+SELECT name, marks, age
+FROM Student
+ORDER BY marks DESC;
+```
+
+`DESC` means:
+
+```text
+Large → Small
+Z → A
+```
+
+Example:
+
+```text
+95
+91
+89
+88
+85
+78
+72
+67
+```
+
+---
+
+# 16. Sorting by Different Columns
+
+Sort students by age:
+
+```sql
+SELECT name, marks, age
+FROM Student
+ORDER BY age ASC;
+```
+
+Sort students alphabetically by name:
+
+```sql
+SELECT name, marks, age
+FROM Student
+ORDER BY name ASC;
+```
+
+---
+
+# 17. LIMIT
+
+`LIMIT` is used to restrict the number of records returned.
+
+For example, find the student with the highest marks:
+
+```sql
+SELECT name, marks
+FROM Student
+ORDER BY marks DESC
+LIMIT 1;
+```
+
+### How it works
+
+First:
+
+```sql
+ORDER BY marks DESC
+```
+
+puts the highest marks first.
+
+Then:
+
+```sql
+LIMIT 1
+```
+
+returns only the first record.
+
+So together, the query finds the student with the highest marks.
+
+---
+
+# 18. UPDATE
+
+`UPDATE` is used to modify existing records.
+
+## Update one column
+
+```sql
+UPDATE Student
+SET age = 24
+WHERE student_id = 109;
+```
+
+This changes the age of student `109`.
+
+Check the result:
+
+```sql
+SELECT *
+FROM Student
+WHERE student_id = 109;
+```
+
+---
+
+# 19. Updating Multiple Columns
+
+We can update multiple columns at the same time.
+
+```sql
+UPDATE Student
+SET age = 24,
+    email = 'testuser@gmail.com'
+WHERE student_id = 109;
+```
+
+This changes both `age` and `email` for student `109`.
+
+---
+
+# 20. Updating a Primary Key
+
+A primary key can also be updated if the new value does not violate the constraints.
+
+Example:
+
+```sql
+UPDATE Student
+SET student_id = 110
+WHERE student_id = 109;
+```
+
+Now:
+
+```text
+109 → 110
+```
+
+We can verify:
+
+```sql
+SELECT *
+FROM Student
+WHERE student_id = 110;
+```
+
+### Important
+
+Always be careful with `UPDATE`.
+
+This is dangerous:
+
+```sql
+UPDATE Student
+SET age = 24;
+```
+
+Because there is **no WHERE condition**.
+
+It will update the age of **every student**.
+
+Prefer:
+
+```sql
+UPDATE Student
+SET age = 24
+WHERE student_id = 109;
+```
+
+---
+
+# 21. Important SQL Commands Covered
+
+| Topic                | Command             |
+| -------------------- | ------------------- |
+| Create database      | `CREATE DATABASE`   |
+| View databases       | `SHOW DATABASES`    |
+| Select database      | `USE`               |
+| Current database     | `SELECT DATABASE()` |
+| Create table         | `CREATE TABLE`      |
+| View tables          | `SHOW TABLES`       |
+| View table structure | `DESCRIBE`          |
+| Primary Key          | `PRIMARY KEY`       |
+| Foreign Key          | `FOREIGN KEY`       |
+| Insert records       | `INSERT INTO`       |
+| Retrieve data        | `SELECT`            |
+| Filter data          | `WHERE`             |
+| Multiple conditions  | `AND`, `OR`         |
+| Sort data            | `ORDER BY`          |
+| Ascending            | `ASC`               |
+| Descending           | `DESC`              |
+| Limit results        | `LIMIT`             |
+| Modify data          | `UPDATE`            |
+
+---
+
+# 22. Our Database Relationship
+
+The database currently follows this structure:
+
+```text
+             CollegeDB
+                 |
+        -------------------
+        |                 |
+   Department           Student
+        |                 |
+   dept_id  <--------  dept_id
+   dept_name           student_id
+                       name
+                       age
+                       email
+                       marks
+```
+
+The important relationship is:
+
+```text
+Department.dept_id
+        ↑
+        |
+Student.dept_id
+```
+
+This is a **one-to-many relationship**:
+
+> One department can have many students.
