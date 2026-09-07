@@ -129,3 +129,11 @@ A developer on your team writes the following two search queries for a global ca
 In high-volume e-commerce databases, executing a literal `DELETE FROM table_name WHERE id = X;` (a "hard delete") is often discouraged for key transactional tables like `customers`, `products`, or `orders`.
 
 **Question:** What are the risks of hard-deleting records in production, and how do database engineers implement a "soft delete" strategy to retain analytical integrity while hiding records from end users?
+
+
+
+
+
+SUBMISSION LINK
+
+https://docs.google.com/forms/d/e/1FAIpQLSf18fV9SsyH2QEdr6La5y3D3XYOubqlLn7eqAwsZWHSQEHvZg/viewform?usp=sharing&ouid=105690303008590251900
